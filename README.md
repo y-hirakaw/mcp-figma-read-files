@@ -20,35 +20,16 @@ npm install
 npm run build
 ```
 
-3. Figma Personal Access Tokenの設定:
-```bash
-export FIGMA_API_TOKEN="your_token_here"
-```
+3. Figma Personal Access Tokenを取得
 
 ## 使用方法
 
-```bash
-# MCPサーバーとして起動
-./build/index.js
-
-# または
-npm start
-```
-
-## API
-
-### get_component_data
-
-Figmaコンポーネントのデータを取得します。
-
-**パラメータ:**
-- `figma_url` (optional): FigmaのURL
-- `file_key` (optional): Figmaファイルのキー
-- `node_ids` (optional): ノードIDの配列または単一ID
-
-**例:**
 ```json
-{
-  "figma_url": "https://www.figma.com/file/abc123/Example?node-id=1%3A2"
+"mcp-figma-read-files": {
+    "command": "node",
+    "args": ["path/to/mcp-figma-read-files/build/index.js"],
+    "env": {
+        "FIGMA_API_TOKEN": "{Get figma token.}"
+    }
 }
 ```
