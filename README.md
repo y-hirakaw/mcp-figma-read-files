@@ -1,31 +1,27 @@
 # mcp-figma-read-files
 
-FigmaのコンポーネントデータをMCP (Model Context Protocol) 経由で取得し、AIが理解しやすい形式に変換するサーバーです。
-※まだ試作中であり正常動作しません。
+**mcp-figma-read-files** is a server that fetches Figma component data through the **Model Context Protocol (MCP)** and converts it into a format that large-language models can easily understand.
 
-## 機能
+> **⚠️ Prototype for learning & experimentation.**  
+> The API specification and output format may change without notice.
 
-- Figma URLまたはfileKey/nodeIdを指定してコンポーネントデータを取得
-- レイアウト情報（サイズ、パディング、色など）をJSON形式で出力
-- AI向けに最適化されたデータ形式
+---
 
-## セットアップ
+## Features
 
-1. 依存関係のインストール:
-```bash
-npm install
-```
+- Retrieve component data by specifying either a Figma URL **or** a `fileKey` / `nodeId` pair  
+- Export key layout information (size, padding, colors, typography, …) as compact JSON  
+- Provide an AI-friendly data structure optimised for code generation and design review  
 
-2. ビルド:
-```bash
-npm run build
-```
+## Setup
 
-3. Figma Personal Access Tokenを取得
+1. **Get a Figma Personal Access Token**  
+   - Create the token with permission **“File contents → Read only.”**
 
-* 「ファイルのコンテンツ」を「読み取りのみ」にして作成
+## Usage
 
-## 使用方法
+Add the following entry to the MCP configuration of your tool (Cursor, VS Copilot, etc.).  
+Make sure to supply your Figma token.
 
 ```json
 "mcp-figma-read-files": {
@@ -36,3 +32,11 @@ npm run build
     }
 }
 ```
+
+After configuring, simply paste the target Figma design URL in your prompt and ask, for example, “Fetch the design information.”
+
+## Disclaimer
+
+* This tool is provided for educational purposes and may exhibit unexpected behaviour.
+* It may stop working if Figma changes its API or enforces rate limits.
+* Use at your own risk.
