@@ -23,12 +23,14 @@ npm run build
 
 3. Figma Personal Access Tokenを取得
 
+* 「ファイルのコンテンツ」を「読み取りのみ」にして作成
+
 ## 使用方法
 
 ```json
 "mcp-figma-read-files": {
-    "command": "node",
-    "args": ["path/to/mcp-figma-read-files/build/index.js"],
+    "command": "npx",
+    "args": ["mcp-figma-read-files"],
     "env": {
         "FIGMA_API_TOKEN": "{Get figma token.}"
     }
