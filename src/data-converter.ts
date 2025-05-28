@@ -19,6 +19,12 @@ export function simplifyNode(n: FigmaNode): SimplifiedComponent {
   const solidFill = n.fills?.find((f) => f.type === "SOLID");
   const style = n.style ?? {};
   
+  // 子要素の処理（再帰的に処理）
+  const children = n.children?.map(child => simplifyNode(child)).filter(Boolean) || undefined;
+  const childrenCount = n.children?.length || 0;
+  
+
+  
   return {
     id: n.id,
     name: n.name,
@@ -42,5 +48,7 @@ export function simplifyNode(n: FigmaNode): SimplifiedComponent {
           textColor: solidFill?.color ? rgbaToHex(solidFill.color) : undefined,
         }
       : undefined,
+    children: children,
+    childrenCount: childrenCount > 0 ? childrenCount : undefined,
   };
 }

@@ -31,9 +31,11 @@ server.tool("get_component_data", "Fetch simplified layout/style data from a Fig
         .describe("Figma file key (required if figma_url not provided)"),
     node_ids: z.union([z.array(z.string().min(1)), z.string().min(1)]).optional()
         .describe("Single node ID or array of IDs"),
-}, async ({ figma_url, file_key, node_ids }) => {
+    include_children: z.boolean().optional().default(true)
+        .describe("Include children components in the response"),
+}, async ({ figma_url, file_key, node_ids, include_children }) => {
     try {
-        const simplified = await getComponentData({ figma_url, file_key, node_ids });
+        const simplified = await getComponentData({ figma_url, file_key, node_ids, include_children });
         return {
             content: [
                 {

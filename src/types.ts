@@ -70,4 +70,11 @@ export interface SimplifiedComponent {
     lineHeight?: number;
     textColor?: string;
   };
+  children?: SimplifiedComponent[];
+  childrenCount?: number;
+}
+
+export interface GetFileNodesResponse {
+  nodes: Record<string, { document: FigmaNode }>;
+  err?: string;
 }
