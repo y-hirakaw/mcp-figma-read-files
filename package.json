@@ -1,6 +1,6 @@
 {
   "name": "mcp-figma-read-files",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A minimal MCP server for Figma file reading",
   "main": "./build/index.js",
   "type": "module",
