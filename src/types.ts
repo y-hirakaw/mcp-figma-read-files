@@ -57,7 +57,7 @@ export interface SimplifiedComponent {
   height: number;
   backgroundColor?: string;
   cornerRadius?: number;
-  padding: {
+  padding?: {
     left: number;
     right: number;
     top: number;

@@ -11,11 +11,20 @@ interface GetComponentDataParams {
   figma_url?: string;
   file_key?: string;
   node_ids?: string | string[];
-  include_children?: boolean; // 子要素を含めるかどうかの新しいオプション
+  include_children?: boolean;
+  include_vectors?: boolean; // ベクター要素を含めるかどうか
+  include_empty_groups?: boolean; // 空のグループを含めるかどうか
 }
 
 export async function getComponentData(params: GetComponentDataParams): Promise<SimplifiedComponent[]> {
-  const { figma_url, file_key, node_ids, include_children = true } = params;
+  const { 
+    figma_url, 
+    file_key, 
+    node_ids, 
+    include_children = true,
+    include_vectors = false,
+    include_empty_groups = false
+  } = params;
   
   /* ----- 入力を整理 ----- */
   let fileKey = file_key;
@@ -59,8 +68,11 @@ export async function getComponentData(params: GetComponentDataParams): Promise<
 
   /* ----- 整形＆レスポンス ----- */
   const simplified = Object.values(rawData.nodes)
-    .map((nodeWrapper: any) => simplifyNode(nodeWrapper.document))
-    .filter(Boolean); // null/undefinedを除外
+    .map((nodeWrapper: any) => simplifyNode(nodeWrapper.document, { 
+      includeVectors: include_vectors, 
+      includeEmptyGroups: include_empty_groups 
+    }))
+    .filter((node): node is SimplifiedComponent => node !== null); // null を除外
 
   return simplified;
 }
