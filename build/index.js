@@ -33,9 +33,20 @@ server.tool("get_component_data", "Fetch simplified layout/style data from a Fig
         .describe("Single node ID or array of IDs"),
     include_children: z.boolean().optional().default(true)
         .describe("Include children components in the response"),
-}, async ({ figma_url, file_key, node_ids, include_children }) => {
+    include_vectors: z.boolean().optional().default(false)
+        .describe("Include vector elements (icons, shapes) in the response"),
+    include_empty_groups: z.boolean().optional().default(false)
+        .describe("Include empty groups and frames in the response"),
+}, async ({ figma_url, file_key, node_ids, include_children, include_vectors, include_empty_groups }) => {
     try {
-        const simplified = await getComponentData({ figma_url, file_key, node_ids, include_children });
+        const simplified = await getComponentData({
+            figma_url,
+            file_key,
+            node_ids,
+            include_children,
+            include_vectors,
+            include_empty_groups
+        });
         return {
             content: [
                 {

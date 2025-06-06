@@ -5,7 +5,7 @@ import { figmaRequest, FIGMA_API_BASE } from './figma-client.js';
 import { parseFigmaUrl } from './url-parser.js';
 import { simplifyNode } from './data-converter.js';
 export async function getComponentData(params) {
-    const { figma_url, file_key, node_ids, include_children = true } = params;
+    const { figma_url, file_key, node_ids, include_children = true, include_vectors = false, include_empty_groups = false } = params;
     /* ----- 入力を整理 ----- */
     let fileKey = file_key;
     let nodeIds = [];
@@ -37,7 +37,10 @@ export async function getComponentData(params) {
     }
     /* ----- 整形＆レスポンス ----- */
     const simplified = Object.values(rawData.nodes)
-        .map((nodeWrapper) => simplifyNode(nodeWrapper.document))
-        .filter(Boolean); // null/undefinedを除外
+        .map((nodeWrapper) => simplifyNode(nodeWrapper.document, {
+        includeVectors: include_vectors,
+        includeEmptyGroups: include_empty_groups
+    }))
+        .filter((node) => node !== null); // null を除外
     return simplified;
 }

@@ -8,37 +8,76 @@ export function rgbaToHex({ r, g, b, a }) {
     // アルファ値が1未満の場合のみ透明度を追加
     return a < 1 ? hexColor + toHex(to255(a)) : hexColor;
 }
-export function simplifyNode(n) {
+// 無駄な情報をフィルタリングするためのヘルパー関数
+function shouldIncludeNode(node) {
+    // VECTOR要素で非常に小さいものは除外
+    if (node.type === 'VECTOR' && node.absoluteBoundingBox) {
+        const { width, height } = node.absoluteBoundingBox;
+        if (width < 1 && height < 1)
+            return false;
+    }
+    // 空のグループは除外
+    if ((node.type === 'GROUP' || node.type === 'FRAME') &&
+        (!node.children || node.children.length === 0)) {
+        return false;
+    }
+    return true;
+}
+function hasNonZeroPadding(padding) {
+    return padding.left !== 0 || padding.right !== 0 || padding.top !== 0 || padding.bottom !== 0;
+}
+export function simplifyNode(n, options = {}) {
+    // フィルタリング: 無駄なノードをスキップ
+    if (!shouldIncludeNode(n) && !options.includeVectors && !options.includeEmptyGroups) {
+        return null;
+    }
     const size = n.absoluteBoundingBox ?? { width: 0, height: 0 };
     const solidFill = n.fills?.find((f) => f.type === "SOLID");
     const style = n.style ?? {};
-    // 子要素の処理（再帰的に処理）
-    const children = n.children?.map(child => simplifyNode(child)).filter(Boolean) || undefined;
-    const childrenCount = n.children?.length || 0;
-    return {
+    // 子要素の処理（再帰的に処理、nullを除外）
+    const children = n.children
+        ?.map(child => simplifyNode(child, options))
+        .filter((child) => child !== null);
+    const childrenCount = children?.length || 0;
+    // パディング情報の最適化
+    const padding = {
+        left: n.paddingLeft ?? 0,
+        right: n.paddingRight ?? 0,
+        top: n.paddingTop ?? 0,
+        bottom: n.paddingBottom ?? 0,
+    };
+    const result = {
         id: n.id,
         name: n.name,
         type: n.type,
         width: Math.round(size.width),
         height: Math.round(size.height),
-        backgroundColor: solidFill?.color ? rgbaToHex(solidFill.color) : undefined,
-        cornerRadius: n.cornerRadius,
-        padding: {
-            left: n.paddingLeft ?? 0,
-            right: n.paddingRight ?? 0,
-            top: n.paddingTop ?? 0,
-            bottom: n.paddingBottom ?? 0,
-        },
-        text: n.characters
-            ? {
-                content: n.characters,
-                fontSize: style.fontSize,
-                fontWeight: style.fontWeight,
-                lineHeight: style.lineHeightPx,
-                textColor: solidFill?.color ? rgbaToHex(solidFill.color) : undefined,
-            }
-            : undefined,
-        children: children,
-        childrenCount: childrenCount > 0 ? childrenCount : undefined,
     };
+    // オプション情報は存在する場合のみ追加
+    if (solidFill?.color) {
+        result.backgroundColor = rgbaToHex(solidFill.color);
+    }
+    if (n.cornerRadius && n.cornerRadius > 0) {
+        result.cornerRadius = n.cornerRadius;
+    }
+    // ゼロでないパディングのみ含める
+    if (hasNonZeroPadding(padding)) {
+        result.padding = padding;
+    }
+    // テキスト情報
+    if (n.characters) {
+        result.text = {
+            content: n.characters,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            lineHeight: style.lineHeightPx,
+            textColor: solidFill?.color ? rgbaToHex(solidFill.color) : undefined,
+        };
+    }
+    // 子要素情報
+    if (children && children.length > 0) {
+        result.children = children;
+        result.childrenCount = childrenCount;
+    }
+    return result;
 }
